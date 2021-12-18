@@ -1,10 +1,7 @@
 package org.abigtomato.nebula.thread.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
