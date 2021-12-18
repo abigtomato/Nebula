@@ -18,6 +18,8 @@
         <module>nebula-base-spark</module>
         <module>nebula-base-flink</module>
         <module>nebula-base-jdk</module>
+        <module>nebula-base-auth</module>
+        <module>nebula-base-common</module>
     </modules>
 
     <name>Nebula</name>
