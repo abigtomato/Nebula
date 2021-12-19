@@ -21,6 +21,7 @@
         <module>nebula-base-auth</module>
         <module>nebula-base-common</module>
         <module>nebula-base-redis</module>
+        <module>nebula-base-scala</module>
     </modules>
 
     <name>Nebula</name>
