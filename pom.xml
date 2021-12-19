@@ -101,6 +101,11 @@
 
         <!-- flink -->
         <flink.version>1.7.2</flink.version>
+
+        <!-- Kafka -->
+        <kafka.version>2.2.0</kafka.version>
+
+        <dependency.scala.version>2.11.8</dependency.scala.version>
     </properties>
 
     <!-- 父工程统一管理依赖和版本号 -->
@@ -448,6 +453,35 @@
                 <artifactId>flink-table_${scala.binary.version}</artifactId>
                 <version>${flink.version}</version>
             </dependency>
+
+            <!--    kafka    -->
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka_${scala.binary.version}</artifactId>
+                <version>${kafka.version}</version>
+            </dependency>
+
+            <!--    akka 相关依赖    -->
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-actor_${scala.binary.version}</artifactId>
+                <version>2.5.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-remote_${scala.binary.version}</artifactId>
+                <version>2.5.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-http_${scala.binary.version}</artifactId>
+                <version>10.0.9</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-protobuf_${scala.binary.version}</artifactId>
+                <version>2.5.4</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -459,6 +493,54 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot-maven-plugin.version}</version>
+                </plugin>
+
+                <!--      该插件用于将Scala代码编译成class文件      -->
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>3.4.6</version>
+                    <executions>
+                        <execution>
+                            <!--      声明绑定到maven的compile阶段      -->
+                            <goals>
+                                <goal>compile</goal>
+                                <goal>testCompile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!--      在项目中既有java又有scala代码时可以将两类代码一起打包      -->
+                <plugin>
+                    <groupId>org.scala-tools</groupId>
+                    <artifactId>maven-scala-plugin</artifactId>
+                    <version>2.15.2</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>compile</goal>
+                                <goal>testCompile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <recompileMode>incremental</recompileMode>
+                        <scalaVersion>${dependency.scala.version}</scalaVersion>
+                        <launchers>
+                            <launcher>
+                                <id>app</id>
+                                <mainClass>com.tz.app.tzApplication</mainClass>
+                                <args>
+                                    <arg>-deprecation</arg>
+                                </args>
+                                <jvmArgs>
+                                    <jvmArg>-Xms64m</jvmArg>
+                                    <jvmArg>-Xmx1024m</jvmArg>
+                                </jvmArgs>
+                            </launcher>
+                        </launchers>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
