@@ -1,7 +1,7 @@
 package org.abigtomato.nebula.designpatterns.adapter;
 
 /**
- * 适配器
+ * 类基础型适配器
  *
  * @author abigtomato
  */
