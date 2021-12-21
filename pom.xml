@@ -22,6 +22,8 @@
         <module>nebula-base-common</module>
         <module>nebula-base-redis</module>
         <module>nebula-base-scala</module>
+        <module>nebula-base-designpatterns</module>
+        <module>nebula-base-algorithm</module>
     </modules>
 
     <name>Nebula</name>
