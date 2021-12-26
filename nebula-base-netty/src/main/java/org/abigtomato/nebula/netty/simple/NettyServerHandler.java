@@ -1,4 +1,4 @@
-package org.abigtomato.nebula.netty.server;
+package org.abigtomato.nebula.netty.simple;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

@@ -1,4 +1,4 @@
-package org.abigtomato.nebula.netty.nio;
+package org.abigtomato.nebula.netty.chat.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -8,6 +8,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.concurrent.*;
 
 /**
  * @author abigtomato
@@ -55,17 +56,26 @@ public class GroupChatClient {
 
     public static void main(String[] args) throws Exception {
         GroupChatClient chatClient = new GroupChatClient();
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+                1, 1,
+                0, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.AbortPolicy());
         // 启动一个线程, 每个3秒，读取从服务器发送数据
-        new Thread(() -> {
+        threadPoolExecutor.submit(() -> {
             while (true) {
                 chatClient.readData();
+                if (Thread.interrupted()) {
+                    return;
+                }
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
 
         // 发送数据给服务器端
         Scanner scanner = new Scanner(System.in);

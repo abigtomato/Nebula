@@ -1,9 +1,12 @@
-package org.abigtomato.nebula.netty.nio;
+package org.abigtomato.nebula.netty.chat.nio;
+
+import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,21 +43,26 @@ public class GroupChatServer {
         System.out.printf("监听线程: %s%n", Thread.currentThread().getName());
         try {
             while (true) {
+                if (Thread.interrupted()) {
+                    return;
+                }
                 if (selector.selectNow() > 0) {
                     Set<SelectionKey> selectionKeys = selector.selectedKeys();
+                    List<SelectionKey> selectionKeyList = Lists.newArrayListWithCapacity(selectionKeys.size());
                     for (SelectionKey key : selectionKeys) {
                         if (key.isAcceptable()) {
+                            // 处理连接事件
                             SocketChannel sc = listenChannel.accept();
                             sc.configureBlocking(false);
                             sc.register(selector, SelectionKey.OP_READ);
-
                             System.out.printf("%s上线%n", sc.getRemoteAddress());
                         } else if (key.isReadable()) {
                             // 读取客户端的数据
                             readData(key);
                         }
-                        selectionKeys.remove(key);
+                        selectionKeyList.add(key);
                     }
+                    selectionKeyList.forEach(selectionKeys::remove);
                 }
             }
         } catch (Exception e) {

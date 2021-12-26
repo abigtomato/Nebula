@@ -1,4 +1,4 @@
-package org.abigtomato.nebula.netty.server;
+package org.abigtomato.nebula.netty.simple;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
