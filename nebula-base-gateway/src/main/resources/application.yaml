@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+dubbo:
+  protocols:
+    dubbo:
+      port: -1
+  registry:
+    timeout: 12000
+    check: false
+  consumer:
+    timeout: 12000
+    retries: 3
+    check: false
+  application:
+    qos-enable: false
+  registries:
+    provider1:
+      address: zookeeper://127.0.0.1:2181
+      id: zk
+    provider2:
+      address: nacos://127.0.0.1:8848
+      id: nacos
+  metadata-reports:
+    metadata1:
+      address: zookeeper://127.0.0.1:2181
+      timeout: 5000
+    metadata2:
+      address: nacos://127.0.0.1:8848
+      timeout: 5000

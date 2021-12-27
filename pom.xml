@@ -37,14 +37,12 @@
         <!-- 核心依赖 -->
         <spring-boot.version>2.6.1</spring-boot.version>
         <spring-cloud.version>2021.0.0</spring-cloud.version>
-<!--        <spring-cloud.version>Hoxton.SR12</spring-cloud.version>-->
         <spring-cloud-alibaba.version>2.2.6.RELEASE</spring-cloud-alibaba.version>
         <!-- maven插件 -->
         <spring-boot-maven-plugin.version>2.6.1</spring-boot-maven-plugin.version>
 
         <!-- 数据库相关 -->
         <mysql.version>8.0.27</mysql.version>
-<!--        <mysql.version>5.1.47</mysql.version>-->
         <druid.version>1.2.8</druid.version>
         <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
         <dynamic-datasource.version>3.5.0</dynamic-datasource.version>
@@ -97,6 +95,7 @@
         <!-- scala -->
         <scala.version>2.13.7</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
+        <dependency.scala.version>2.11.8</dependency.scala.version>
 
         <!-- spark -->
         <spark.version>2.3.1</spark.version>
@@ -107,7 +106,10 @@
         <!-- Kafka -->
         <kafka.version>2.2.0</kafka.version>
 
-        <dependency.scala.version>2.11.8</dependency.scala.version>
+        <!-- swagger -->
+        <swagger3.version>3.0.0</swagger3.version>
+        <knife4j.version>2.0.6</knife4j.version>
+        <knife4j-micro.version>3.0.1</knife4j-micro.version>
     </properties>
 
     <!-- 父工程统一管理依赖和版本号 -->
@@ -172,18 +174,6 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
                 <version>${dynamic-datasource.version}</version>
-            </dependency>
-
-            <!-- swagger -->
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger2</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger-ui</artifactId>
-                <version>${swagger.version}</version>
             </dependency>
 
             <!-- fastjson -->
@@ -484,27 +474,43 @@
                 <artifactId>akka-protobuf_${scala.binary.version}</artifactId>
                 <version>2.5.4</version>
             </dependency>
+
+            <!-- swagger相关依赖 -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-boot-starter</artifactId>
+                <version>${swagger3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-micro-spring-boot-starter</artifactId>
+                <version>${knife4j-micro.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
-        <!-- Spring Boot Maven 插件 -->
         <pluginManagement>
             <plugins>
+                <!-- Spring Boot Maven 插件 -->
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot-maven-plugin.version}</version>
                 </plugin>
-
-                <!--      该插件用于将Scala代码编译成class文件      -->
+                <!-- 该插件用于将Scala代码编译成class文件 -->
                 <plugin>
                     <groupId>net.alchim31.maven</groupId>
                     <artifactId>scala-maven-plugin</artifactId>
                     <version>3.4.6</version>
                     <executions>
                         <execution>
-                            <!--      声明绑定到maven的compile阶段      -->
+                            <!-- 声明绑定到maven的compile阶段 -->
                             <goals>
                                 <goal>compile</goal>
                                 <goal>testCompile</goal>
@@ -512,8 +518,7 @@
                         </execution>
                     </executions>
                 </plugin>
-
-                <!--      在项目中既有java又有scala代码时可以将两类代码一起打包      -->
+                <!-- 在项目中既有java又有scala代码时可以将两类代码一起打包 -->
                 <plugin>
                     <groupId>org.scala-tools</groupId>
                     <artifactId>maven-scala-plugin</artifactId>

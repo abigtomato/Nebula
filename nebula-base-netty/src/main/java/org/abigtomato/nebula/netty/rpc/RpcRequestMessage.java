@@ -1,9 +1,6 @@
 package org.abigtomato.nebula.netty.rpc;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author abigtomato
@@ -12,6 +9,8 @@ import lombok.ToString;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class RpcRequestMessage extends Message {
 
     private String interfaceName;

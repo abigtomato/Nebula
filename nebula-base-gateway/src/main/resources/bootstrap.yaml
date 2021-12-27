@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: nebula-gateway
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    zookeeper:
+      discovery:
+        enabled: false
+    nacos:
+      config:
+        enabled: false
+        file-extension: yml
+        shared-configs:
+          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+    sentinel:
+      eager: true
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  cloud:
+    zookeeper:
+      enabled: true
+      connect-string: 127.0.0.1:2181
+      discovery:
+        enabled: true
+        register: true
+        instance-host: ${spring.cloud.client.ip-address}
+    nacos:
+      config:
+        enabled: true
+        server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:30003
+      datasource:
+        ds1:
+          nacos:
+            server-addr: 127.0.0.1:8848
+            dataId: sentinel-nebula-gateway
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow
+
+dubbo:
+  registry:
+    address: zookeeper://127.0.0.1:2181?init.timeout=120000
+    id: zk
+  consumer:
+    check: false

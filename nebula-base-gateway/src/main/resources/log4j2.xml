@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="trace">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{MM-dd HH:mm:ss.sss}] %p[%t]-%C{1}(%L)-> [%X{TRACE_ID}] [%X{SERVICE_NAME}] [%X{URI}] %m%n"/>
+        </Console>
+
+        <RollingFile name="LOG_1" fileName="/data/home/deploy/output/logs/nebula-gateway.log"
+                     immediateFlush="true"
+                     filePattern="/data/home/deploy/output/logs/his/$${date:yyyy-MM}/nebula-gateway/nebula-gateway-%d{MM-dd-yyyy}-%i.log.gz">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout>
+                <Pattern>[%d{MM-dd HH:mm:ss.sss}] %p[%t]-%C{1}(%L)-> [%X{TRACE_ID}] [%X{SERVICE_NAME}] [%X{URI}] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy
+                        size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="LOG_1"/>
+        </Root>
+    </Loggers>
+</configuration>
