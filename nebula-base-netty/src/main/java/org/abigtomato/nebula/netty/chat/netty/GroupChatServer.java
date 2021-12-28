@@ -10,21 +10,20 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
+import java.util.StringJoiner;
 
 /**
+ * 通讯室服务端
+ *
  * @author abigtomato
  */
+@Slf4j
 public class GroupChatServer {
 
-    private final int port;
-
-    public GroupChatServer(int port) {
-        this.port = port;
-    }
-
-    public void run() throws InterruptedException {
+    public static void run() {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -36,7 +35,7 @@ public class GroupChatServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
 
                         @Override
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        protected void initChannel(SocketChannel socketChannel) {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast("decoder", new StringDecoder());
                             pipeline.addLast("encoder", new StringEncoder());
@@ -45,7 +44,7 @@ public class GroupChatServer {
                                 final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
                                 @Override
-                                public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+                                public void handlerAdded(ChannelHandlerContext ctx) {
                                     // 连接建立
                                     Channel channel = ctx.channel();
                                     channelGroup.writeAndFlush(channel.remoteAddress());
@@ -53,30 +52,30 @@ public class GroupChatServer {
                                 }
 
                                 @Override
-                                public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                public void channelActive(ChannelHandlerContext ctx) {
                                     // channel处于活动状态
-                                    System.out.println("ctx = " + ctx.channel().remoteAddress());
+                                    log.info("-----> address: {}", ctx.channel().remoteAddress());
                                 }
 
                                 @Override
-                                public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+                                public void channelInactive(ChannelHandlerContext ctx) {
                                     // channel处于不活动状态
-                                    System.out.println("ctx = " + ctx.channel().remoteAddress());
+                                    log.info("-----> address: {}", ctx.channel().remoteAddress());
                                 }
 
                                 @Override
-                                public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+                                public void handlerRemoved(ChannelHandlerContext ctx) {
                                     // 连接关闭
                                     channelGroup.writeAndFlush(ctx.channel().remoteAddress());
                                 }
 
                                 @Override
-                                protected void channelRead0(ChannelHandlerContext channelHandlerContext, String msg) throws Exception {
+                                protected void channelRead0(ChannelHandlerContext channelHandlerContext, String msg) {
                                     // 处理消息
                                     Channel currentChannel = channelHandlerContext.channel();
                                     channelGroup.forEach(channel -> {
                                         if (channel != currentChannel) {
-                                            channel.writeAndFlush(channel.remoteAddress() + " : " + msg);
+                                            channel.writeAndFlush(channel.remoteAddress().toString() + ":" + msg);
                                         } else {
                                             channel.writeAndFlush(msg);
                                         }
@@ -84,14 +83,17 @@ public class GroupChatServer {
                                 }
 
                                 @Override
-                                public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+                                public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
                                     // 处理异常
-                                    System.out.println("cause = " + cause.getMessage());
+                                    log.info("-----> error: {}", cause.getMessage());
                                     ctx.close();
                                 }
                             });
                         }
-                    }).bind(port).sync().channel().closeFuture().sync();
+                    }).bind(8080).sync().channel().closeFuture().sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            log.info("-----> error: {}", e.getCause().getMessage());
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
@@ -99,10 +101,6 @@ public class GroupChatServer {
     }
 
     public static void main(String[] args) {
-        try {
-            new GroupChatServer(7000).run();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        GroupChatServer.run();
     }
 }

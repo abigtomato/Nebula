@@ -9,16 +9,17 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-import io.netty.handler.codec.http2.Http2ServerUpgradeCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 
 /**
  * @author abigtomato
  */
+@Slf4j
 public class WebSocketServer {
 
     public void run() throws InterruptedException {
@@ -33,7 +34,7 @@ public class WebSocketServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
 
                         @Override
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        protected void initChannel(SocketChannel socketChannel) {
                             socketChannel.pipeline()
                                     // http协议编解码器
                                     .addLast(new HttpServerCodec())
@@ -47,28 +48,31 @@ public class WebSocketServer {
                                     .addLast(new SimpleChannelInboundHandler<TextWebSocketFrame>() {
 
                                         @Override
-                                        public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+                                        public void handlerAdded(ChannelHandlerContext ctx) {
                                             // 唯一id
-                                            System.out.println("ctx = " + ctx.channel().id().asLongText());
+                                            log.info("-----> longText: {}", ctx.channel().id().asLongText());
                                             // 非唯一id
-                                            System.out.println("ctx = " + ctx.channel().id().asShortText());
+                                            log.info("-----> shortText: {}", ctx.channel().id().asShortText());
                                         }
 
                                         @Override
-                                        protected void channelRead0(ChannelHandlerContext channelHandlerContext, TextWebSocketFrame textWebSocketFrame) throws Exception {
-                                            System.out.println("textWebSocketFrame = " + textWebSocketFrame.text());
-                                            channelHandlerContext.channel().writeAndFlush(new TextWebSocketFrame(new Date().toString()));
+                                        protected void channelRead0(ChannelHandlerContext channelHandlerContext,
+                                                                    TextWebSocketFrame textWebSocketFrame) {
+                                            log.info("-----> text: {}", textWebSocketFrame.text());
+                                            channelHandlerContext.channel()
+                                                    .writeAndFlush(new TextWebSocketFrame(new Date().toString()));
                                         }
 
                                         @Override
-                                        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                                            System.out.println("cause = " + cause.getMessage());
+                                        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+                                            log.info("-----> error: {}", cause.getMessage());
                                             ctx.close();
                                         }
                                     });
                         }
                     });
-            ChannelFuture channelFuture = serverBootstrap.bind(7000).sync();
+
+            ChannelFuture channelFuture = serverBootstrap.bind(8080).sync();
             channelFuture.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
